@@ -29,7 +29,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 28px;
-      align-items: center;
+      align-items: stretch;
     }
 
     .hero {
@@ -38,7 +38,7 @@
       padding: 34px;
       border-radius: 26px;
       box-shadow: 0 0 35px rgba(0, 0, 0, 0.4);
-      min-height: 620px;
+      min-height: 760px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -103,6 +103,7 @@
       border-radius: 18px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       transition: 0.3s;
+      min-height: 150px;
     }
 
     .style-card:hover {
@@ -125,6 +126,7 @@
       font-size: 13px;
       color: #bdbdbd;
       margin: 0;
+      line-height: 1.6;
     }
 
     .timing {
@@ -136,6 +138,49 @@
       color: #f8c146;
       font-weight: bold;
       line-height: 1.5;
+      font-size: 18px;
+    }
+
+    .owner-details {
+      margin-top: 18px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(248, 193, 70, 0.22);
+      border-radius: 18px;
+    }
+
+    .owner-details h3 {
+      color: #f8c146;
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    .owner-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .owner-card {
+      background: #242424;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 90px;
+    }
+
+    .owner-card span {
+      display: block;
+      color: #aaa;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .owner-card a {
+      color: #f8c146;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 17px;
     }
 
     .container {
@@ -144,6 +189,10 @@
       border-radius: 24px;
       box-shadow: 0 0 35px rgba(0, 0, 0, 0.45);
       border: 1px solid rgba(255, 255, 255, 0.08);
+      min-height: 760px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .logo {
@@ -292,7 +341,8 @@
         grid-template-columns: 1fr;
       }
 
-      .hero {
+      .hero,
+      .container {
         min-height: auto;
         padding: 26px;
       }
@@ -306,6 +356,10 @@
       }
 
       .services-preview {
+        grid-template-columns: 1fr;
+      }
+
+      .owner-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -360,6 +414,22 @@
         Business Timings:<br />
         5:30 AM to 9:00 PM
       </div>
+
+      <div class="owner-details">
+        <h3>Contact LNS HairStyles</h3>
+
+        <div class="owner-grid">
+          <div class="owner-card">
+            <span>Owner</span>
+            <a href="tel:9701326265">9701326265</a>
+          </div>
+
+          <div class="owner-card">
+            <span>Co-owner</span>
+            <a href="tel:8374794192">8374794192</a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="container">
@@ -370,7 +440,7 @@
 
       <div class="info-box">
         Scan the QR code, fill this form, and reserve your slot.
-        The owner and co-owner will receive your booking details.
+        WhatsApp will open with your booking details. Please press Send so the owner can confirm your slot.
       </div>
 
       <form id="bookingForm">
@@ -405,7 +475,7 @@
       </form>
 
       <div class="success" id="successBox">
-        Your appointment details are ready. Please tap the WhatsApp button and press Send so LNS HairStyles can confirm your slot.
+        Your appointment details are ready. WhatsApp will open now. Please press Send so LNS HairStyles can confirm your slot.
       </div>
 
       <div class="error" id="errorBox">
@@ -417,8 +487,6 @@
       </a>
 
       <div class="contact">
-        Owner: <a href="tel:9701326265">9701326265</a><br />
-        Co-owner: <a href="tel:8374794192">8374794192</a><br />
         Timings: 5:30 AM to 9:00 PM
       </div>
 
@@ -433,6 +501,10 @@
     const OWNER_PHONE = "919701326265";
     const CO_OWNER_PHONE = "918374794192";
 
+    /*
+      Optional Google Apps Script URL.
+      Keep empty if you only want free WhatsApp click-to-send.
+    */
     const GOOGLE_SCRIPT_URL = "";
 
     const form = document.getElementById("bookingForm");
@@ -447,6 +519,7 @@
       successBox.style.display = "none";
       errorBox.style.display = "none";
       whatsappLink.style.display = "none";
+
       submitBtn.disabled = true;
       submitBtn.innerText = "Booking...";
 
@@ -473,7 +546,8 @@ Message: ${booking.message || "No special request"}
 
 Business Timings: 5:30 AM to 9:00 PM
 
-Please confirm the slot.`;
+Please confirm the slot.
+If not available, please reply with an updated time.`;
 
       const encodedMessage = encodeURIComponent(whatsappMessage);
       whatsappLink.href = `https://wa.me/${OWNER_PHONE}?text=${encodedMessage}`;
@@ -490,6 +564,9 @@ Please confirm the slot.`;
           });
         }
 
+        successBox.innerText =
+          "Your appointment details are ready. WhatsApp will open now. Please press Send so LNS HairStyles can confirm your slot.";
+
         successBox.style.display = "block";
         whatsappLink.style.display = "block";
 
@@ -500,6 +577,10 @@ Please confirm the slot.`;
         form.reset();
       } catch (error) {
         console.error(error);
+
+        errorBox.innerText =
+          "Something went wrong. Please use the WhatsApp button to send booking manually.";
+
         errorBox.style.display = "block";
         whatsappLink.style.display = "block";
       }
