@@ -1,540 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LNS HairStyles: Book Your Appointment</title>
+<script>
+  const SHOP_NAME = "LNS HairStyles";
+  const OWNER_PHONE = "919701326265";
+  const CO_OWNER_PHONE = "918374794192";
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
+  const GOOGLE_SCRIPT_URL = "";
+
+  const form = document.getElementById("bookingForm");
+  const submitBtn = document.getElementById("submitBtn");
+  const successBox = document.getElementById("successBox");
+  const errorBox = document.getElementById("errorBox");
+  const ownerWhatsappLink = document.getElementById("ownerWhatsappLink");
+  const coOwnerWhatsappLink = document.getElementById("coOwnerWhatsappLink");
+
+  function isWithinBusinessTime(time) {
+    const openingTime = "05:30";
+    const closingTime = "21:00";
+
+    return time >= openingTime && time <= closingTime;
+  }
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    successBox.style.display = "none";
+    errorBox.style.display = "none";
+    ownerWhatsappLink.style.display = "none";
+    coOwnerWhatsappLink.style.display = "none";
+
+    const selectedTime = document.getElementById("time").value;
+
+    if (!isWithinBusinessTime(selectedTime)) {
+      alert("Service unavailable. Please book between 5:30 AM and 9:00 PM.");
+      errorBox.innerText = "Service unavailable. Please choose a time between 5:30 AM and 9:00 PM.";
+      errorBox.style.display = "block";
+      return;
     }
 
-    body {
-      background:
-        radial-gradient(circle at top left, rgba(248, 193, 70, 0.18), transparent 35%),
-        linear-gradient(135deg, #090909, #181818);
-      color: #fff;
-      min-height: 100vh;
-      padding: 24px;
-    }
-
-    .main-wrapper {
-      max-width: 1180px;
-      margin: auto;
-      min-height: 92vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
-      align-items: stretch;
-    }
-
-    .hero {
-      background: linear-gradient(145deg, #1a1a1a, #101010);
-      border: 1px solid rgba(248, 193, 70, 0.18);
-      padding: 34px;
-      border-radius: 26px;
-      box-shadow: 0 0 35px rgba(0, 0, 0, 0.4);
-      min-height: 760px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .badge {
-      display: inline-block;
-      width: fit-content;
-      background: rgba(248, 193, 70, 0.12);
-      color: #f8c146;
-      padding: 9px 14px;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 18px;
-      border: 1px solid rgba(248, 193, 70, 0.3);
-    }
-
-    .hero h1 {
-      font-size: 46px;
-      line-height: 1.1;
-      margin-bottom: 12px;
-    }
-
-    .hero h1 span {
-      color: #f8c146;
-    }
-
-    .hero h2 {
-      font-size: 24px;
-      color: #fff;
-      margin-bottom: 16px;
-    }
-
-    .hero p {
-      color: #cfcfcf;
-      font-size: 16px;
-      line-height: 1.7;
-      margin-bottom: 22px;
-    }
-
-    .quote-box {
-      background: #222;
-      padding: 18px;
-      border-left: 4px solid #f8c146;
-      border-radius: 14px;
-      margin: 18px 0;
-      color: #e8e8e8;
-      line-height: 1.6;
-    }
-
-    .services-preview {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      margin-top: 18px;
-    }
-
-    .style-card {
-      background: #242424;
-      padding: 18px;
-      border-radius: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: 0.3s;
-      min-height: 150px;
-    }
-
-    .style-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(248, 193, 70, 0.5);
-    }
-
-    .style-card .icon {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    .style-card h3 {
-      color: #f8c146;
-      font-size: 16px;
-      margin-bottom: 6px;
-    }
-
-    .style-card p {
-      font-size: 13px;
-      color: #bdbdbd;
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    .timing {
-      margin-top: 22px;
-      padding: 16px;
-      background: rgba(248, 193, 70, 0.1);
-      border: 1px solid rgba(248, 193, 70, 0.25);
-      border-radius: 16px;
-      color: #f8c146;
-      font-weight: bold;
-      line-height: 1.5;
-      font-size: 18px;
-    }
-
-    .owner-details {
-      margin-top: 18px;
-      padding: 18px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(248, 193, 70, 0.22);
-      border-radius: 18px;
-    }
-
-    .owner-details h3 {
-      color: #f8c146;
-      font-size: 20px;
-      margin-bottom: 14px;
-    }
-
-    .owner-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .owner-card {
-      background: #242424;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 16px;
-      min-height: 90px;
-    }
-
-    .owner-card span {
-      display: block;
-      color: #aaa;
-      font-size: 13px;
-      margin-bottom: 6px;
-    }
-
-    .owner-card a {
-      color: #f8c146;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 17px;
-    }
-
-    .container {
-      background: rgba(28, 28, 28, 0.96);
-      padding: 28px;
-      border-radius: 24px;
-      box-shadow: 0 0 35px rgba(0, 0, 0, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      min-height: 760px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .logo {
-      text-align: center;
-      margin-bottom: 22px;
-    }
-
-    .logo h1 {
-      font-size: 32px;
-      color: #f8c146;
-      margin-bottom: 8px;
-    }
-
-    .logo p {
-      color: #ccc;
-      font-size: 16px;
-    }
-
-    .info-box {
-      background: #292929;
-      padding: 16px;
-      border-radius: 14px;
-      margin-bottom: 22px;
-      font-size: 14px;
-      color: #ddd;
-      line-height: 1.6;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 7px;
-      font-weight: bold;
-      font-size: 14px;
-      color: #f4f4f4;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid transparent;
-      border-radius: 12px;
-      outline: none;
-      font-size: 15px;
-      background: #303030;
-      color: #fff;
-      transition: 0.3s;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: #f8c146;
-      box-shadow: 0 0 0 3px rgba(248, 193, 70, 0.12);
-    }
-
-    textarea {
-      resize: none;
-      min-height: 80px;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 24px;
-      padding: 16px;
-      background: linear-gradient(135deg, #f8c146, #ffd76b);
-      color: #111;
-      border: none;
-      border-radius: 14px;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(248, 193, 70, 0.25);
-    }
-
-    button:disabled {
-      background: #777;
-      cursor: not-allowed;
-    }
-
-    .success {
-      display: none;
-      margin-top: 18px;
-      padding: 14px;
-      border-radius: 12px;
-      background: #153d22;
-      color: #b9ffc8;
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .error {
-      display: none;
-      margin-top: 18px;
-      padding: 14px;
-      border-radius: 12px;
-      background: #4a1717;
-      color: #ffc1c1;
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .whatsapp-btn {
-      display: none;
-      text-align: center;
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 12px;
-      background: #25d366;
-      color: #fff;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .co-owner-btn {
-      background: #128c7e;
-    }
-
-    .contact {
-      margin-top: 18px;
-      text-align: center;
-      font-size: 14px;
-      color: #ddd;
-      line-height: 1.7;
-    }
-
-    .footer {
-      text-align: center;
-      color: #888;
-      margin-top: 18px;
-      font-size: 13px;
-    }
-
-    @media (max-width: 900px) {
-      body {
-        padding: 16px;
-      }
-
-      .main-wrapper {
-        grid-template-columns: 1fr;
-      }
-
-      .hero,
-      .container {
-        min-height: auto;
-        padding: 26px;
-      }
-
-      .hero h1 {
-        font-size: 34px;
-      }
-
-      .hero h2 {
-        font-size: 21px;
-      }
-
-      .services-preview {
-        grid-template-columns: 1fr;
-      }
-
-      .owner-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="main-wrapper">
-
-    <section class="hero">
-      <div class="badge">✂ Premium Grooming Experience</div>
-
-      <h1>Welcome to <span>LNS HairStyles</span></h1>
-      <h2>Here to Help!</h2>
-
-      <p>
-        Get your perfect haircut, beard trim, styling, facial, or grooming service
-        with a smooth appointment booking experience. Scan, book, and relax.
-      </p>
-
-      <div class="quote-box">
-        “A fresh haircut is not just a style, it is confidence you can wear.”
-      </div>
-
-      <div class="services-preview">
-        <div class="style-card">
-          <div class="icon">✂️</div>
-          <h3>Classic Haircut</h3>
-          <p>Clean, sharp, and stylish cuts for daily confidence.</p>
-        </div>
-
-        <div class="style-card">
-          <div class="icon">💈</div>
-          <h3>Beard Styling</h3>
-          <p>Shape your beard with a professional finishing touch.</p>
-        </div>
-
-        <div class="style-card">
-          <div class="icon">🔥</div>
-          <h3>Trendy Looks</h3>
-          <p>Modern haircut designs and fresh styles.</p>
-        </div>
-
-        <div class="style-card">
-          <div class="icon">✨</div>
-          <h3>Facial & Grooming</h3>
-          <p>Look fresh, clean, and ready for your day.</p>
-        </div>
-      </div>
-
-      <div class="timing">
-        Business Timings:<br />
-        5:30 AM to 9:00 PM
-      </div>
-
-      <div class="owner-details">
-        <h3>Contact LNS HairStyles</h3>
-
-        <div class="owner-grid">
-          <div class="owner-card">
-            <span>Owner</span>
-            <a href="tel:9701326265">9701326265</a>
-          </div>
-
-          <div class="owner-card">
-            <span>Co-owner</span>
-            <a href="tel:8374794192">8374794192</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="container">
-      <div class="logo">
-        <h1>LNS HairStyles</h1>
-        <p>Book Your Appointment</p>
-      </div>
-
-      <div class="info-box">
-        Scan the QR code, fill this form, and reserve your slot.
-        WhatsApp will open with your booking details. Please press Send to owner and co-owner for quick confirmation.
-      </div>
-
-      <form id="bookingForm">
-        <label>Full Name</label>
-        <input type="text" id="name" placeholder="Enter your name" required />
-
-        <label>Mobile Number</label>
-        <input type="tel" id="phone" placeholder="Enter your mobile number" required />
-
-        <label>Service</label>
-        <select id="service" required>
-          <option value="">Select service</option>
-          <option value="Hair Cut">Hair Cut</option>
-          <option value="Beard Trim">Beard Trim</option>
-          <option value="Hair Cut + Beard Trim">Hair Cut + Beard Trim</option>
-          <option value="Hair Styling">Hair Styling</option>
-          <option value="Hair Coloring">Hair Coloring</option>
-          <option value="Facial">Facial</option>
-          <option value="Other">Other</option>
-        </select>
-
-        <label>Preferred Date</label>
-        <input type="date" id="date" required />
-
-        <label>Preferred Time</label>
-        <input type="time" id="time" min="05:30" max="21:00" required />
-
-        <label>Message / Special Request</label>
-        <textarea id="message" placeholder="Any special request?"></textarea>
-
-        <button type="submit" id="submitBtn">Book Appointment</button>
-      </form>
-
-      <div class="success" id="successBox">
-        Your appointment details are ready. WhatsApp will open now. Please press Send so LNS HairStyles can confirm your slot.
-      </div>
-
-      <div class="error" id="errorBox">
-        Something went wrong. Please try again or contact the salon directly.
-      </div>
-
-      <a class="whatsapp-btn" id="ownerWhatsappLink" target="_blank">
-        Send Booking to Owner on WhatsApp
-      </a>
-
-      <a class="whatsapp-btn co-owner-btn" id="coOwnerWhatsappLink" target="_blank">
-        Send Booking to Co-owner on WhatsApp
-      </a>
-
-      <div class="contact">
-        Timings: 5:30 AM to 9:00 PM
-      </div>
-
-      <div class="footer">
-        © 2026 LNS HairStyles. All rights reserved.
-      </div>
-    </section>
-  </div>
-
-  <script>
-    const SHOP_NAME = "LNS HairStyles";
-    const OWNER_PHONE = "919701326265";
-    const CO_OWNER_PHONE = "918374794192";
-
-    const GOOGLE_SCRIPT_URL = "";
-
-    const form = document.getElementById("bookingForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const successBox = document.getElementById("successBox");
-    const errorBox = document.getElementById("errorBox");
-    const ownerWhatsappLink = document.getElementById("ownerWhatsappLink");
-    const coOwnerWhatsappLink = document.getElementById("coOwnerWhatsappLink");
-
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      successBox.style.display = "none";
-      errorBox.style.display = "none";
-      ownerWhatsappLink.style.display = "none";
-      coOwnerWhatsappLink.style.display = "none";
-
-      submitBtn.disabled = true;
-      submitBtn.innerText = "Booking...";
-
-      const booking = {
-        shopName: SHOP_NAME,
-        name: document.getElementById("name").value.trim(),
-        phone: document.getElementById("phone").value.trim(),
-        service: document.getElementById("service").value,
-        date: document.getElementById("date").value,
-        time: document.getElementById("time").value,
-        message: document.getElementById("message").value.trim(),
-        createdAt: new Date().toLocaleString()
-      };
-
-      const whatsappMessage =
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Booking...";
+
+    const booking = {
+      shopName: SHOP_NAME,
+      name: document.getElementById("name").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      service: document.getElementById("service").value,
+      date: document.getElementById("date").value,
+      time: selectedTime,
+      message: document.getElementById("message").value.trim(),
+      createdAt: new Date().toLocaleString()
+    };
+
+    const whatsappMessage =
 `New Appointment Request - ${SHOP_NAME}
 
 Name: ${booking.name}
@@ -544,54 +60,50 @@ Date: ${booking.date}
 Time: ${booking.time}
 Message: ${booking.message || "No special request"}
 
-Business Timings: 5:30 AM to 9:00 PM
-
 Please confirm the slot.
 If not available, please reply with an updated time.`;
 
-      const encodedMessage = encodeURIComponent(whatsappMessage);
+    const encodedMessage = encodeURIComponent(whatsappMessage);
 
-      ownerWhatsappLink.href = `https://wa.me/${OWNER_PHONE}?text=${encodedMessage}`;
-      coOwnerWhatsappLink.href = `https://wa.me/${CO_OWNER_PHONE}?text=${encodedMessage}`;
+    ownerWhatsappLink.href = `https://wa.me/${OWNER_PHONE}?text=${encodedMessage}`;
+    coOwnerWhatsappLink.href = `https://wa.me/${CO_OWNER_PHONE}?text=${encodedMessage}`;
 
-      try {
-        if (GOOGLE_SCRIPT_URL) {
-          await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(booking)
-          });
-        }
-
-        successBox.innerText =
-          "Your appointment details are ready. WhatsApp will open now for the owner. After sending, please also tap the co-owner button for quick confirmation.";
-
-        successBox.style.display = "block";
-        ownerWhatsappLink.style.display = "block";
-        coOwnerWhatsappLink.style.display = "block";
-
-        setTimeout(() => {
-          window.open(ownerWhatsappLink.href, "_blank");
-        }, 800);
-
-        form.reset();
-      } catch (error) {
-        console.error(error);
-
-        errorBox.innerText =
-          "Something went wrong. Please use the WhatsApp buttons to send booking manually.";
-
-        errorBox.style.display = "block";
-        ownerWhatsappLink.style.display = "block";
-        coOwnerWhatsappLink.style.display = "block";
+    try {
+      if (GOOGLE_SCRIPT_URL) {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(booking)
+        });
       }
 
-      submitBtn.disabled = false;
-      submitBtn.innerText = "Book Appointment";
-    });
-  </script>
-</body>
-</html>
+      successBox.innerText =
+        "Your appointment details are ready. WhatsApp will open now for the owner. After sending, please also tap the co-owner button for quick confirmation.";
+
+      successBox.style.display = "block";
+      ownerWhatsappLink.style.display = "block";
+      coOwnerWhatsappLink.style.display = "block";
+
+      setTimeout(() => {
+        window.open(ownerWhatsappLink.href, "_blank");
+      }, 800);
+
+      form.reset();
+    } catch (error) {
+      console.error(error);
+
+      errorBox.innerText =
+        "Something went wrong. Please use the WhatsApp buttons to send booking manually.";
+
+      errorBox.style.display = "block";
+      ownerWhatsappLink.style.display = "block";
+      coOwnerWhatsappLink.style.display = "block";
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Book Appointment";
+  });
+</script>
