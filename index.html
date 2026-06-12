@@ -311,18 +311,16 @@
       font-weight: bold;
     }
 
+    .co-owner-btn {
+      background: #128c7e;
+    }
+
     .contact {
       margin-top: 18px;
       text-align: center;
       font-size: 14px;
       color: #ddd;
       line-height: 1.7;
-    }
-
-    .contact a {
-      color: #f8c146;
-      text-decoration: none;
-      font-weight: bold;
     }
 
     .footer {
@@ -440,7 +438,7 @@
 
       <div class="info-box">
         Scan the QR code, fill this form, and reserve your slot.
-        WhatsApp will open with your booking details. Please press Send so the owner can confirm your slot.
+        WhatsApp will open with your booking details. Please press Send to owner and co-owner for quick confirmation.
       </div>
 
       <form id="bookingForm">
@@ -482,8 +480,12 @@
         Something went wrong. Please try again or contact the salon directly.
       </div>
 
-      <a class="whatsapp-btn" id="whatsappLink" target="_blank">
+      <a class="whatsapp-btn" id="ownerWhatsappLink" target="_blank">
         Send Booking to Owner on WhatsApp
+      </a>
+
+      <a class="whatsapp-btn co-owner-btn" id="coOwnerWhatsappLink" target="_blank">
+        Send Booking to Co-owner on WhatsApp
       </a>
 
       <div class="contact">
@@ -501,24 +503,22 @@
     const OWNER_PHONE = "919701326265";
     const CO_OWNER_PHONE = "918374794192";
 
-    /*
-      Optional Google Apps Script URL.
-      Keep empty if you only want free WhatsApp click-to-send.
-    */
     const GOOGLE_SCRIPT_URL = "";
 
     const form = document.getElementById("bookingForm");
     const submitBtn = document.getElementById("submitBtn");
     const successBox = document.getElementById("successBox");
     const errorBox = document.getElementById("errorBox");
-    const whatsappLink = document.getElementById("whatsappLink");
+    const ownerWhatsappLink = document.getElementById("ownerWhatsappLink");
+    const coOwnerWhatsappLink = document.getElementById("coOwnerWhatsappLink");
 
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       successBox.style.display = "none";
       errorBox.style.display = "none";
-      whatsappLink.style.display = "none";
+      ownerWhatsappLink.style.display = "none";
+      coOwnerWhatsappLink.style.display = "none";
 
       submitBtn.disabled = true;
       submitBtn.innerText = "Booking...";
@@ -550,7 +550,9 @@ Please confirm the slot.
 If not available, please reply with an updated time.`;
 
       const encodedMessage = encodeURIComponent(whatsappMessage);
-      whatsappLink.href = `https://wa.me/${OWNER_PHONE}?text=${encodedMessage}`;
+
+      ownerWhatsappLink.href = `https://wa.me/${OWNER_PHONE}?text=${encodedMessage}`;
+      coOwnerWhatsappLink.href = `https://wa.me/${CO_OWNER_PHONE}?text=${encodedMessage}`;
 
       try {
         if (GOOGLE_SCRIPT_URL) {
@@ -565,13 +567,14 @@ If not available, please reply with an updated time.`;
         }
 
         successBox.innerText =
-          "Your appointment details are ready. WhatsApp will open now. Please press Send so LNS HairStyles can confirm your slot.";
+          "Your appointment details are ready. WhatsApp will open now for the owner. After sending, please also tap the co-owner button for quick confirmation.";
 
         successBox.style.display = "block";
-        whatsappLink.style.display = "block";
+        ownerWhatsappLink.style.display = "block";
+        coOwnerWhatsappLink.style.display = "block";
 
         setTimeout(() => {
-          window.open(whatsappLink.href, "_blank");
+          window.open(ownerWhatsappLink.href, "_blank");
         }, 800);
 
         form.reset();
@@ -579,10 +582,11 @@ If not available, please reply with an updated time.`;
         console.error(error);
 
         errorBox.innerText =
-          "Something went wrong. Please use the WhatsApp button to send booking manually.";
+          "Something went wrong. Please use the WhatsApp buttons to send booking manually.";
 
         errorBox.style.display = "block";
-        whatsappLink.style.display = "block";
+        ownerWhatsappLink.style.display = "block";
+        coOwnerWhatsappLink.style.display = "block";
       }
 
       submitBtn.disabled = false;
