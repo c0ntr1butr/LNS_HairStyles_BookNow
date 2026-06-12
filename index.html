@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LNS HairStyles: Book Your Appointment</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #111;
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: auto;
+      background: #1c1c1c;
+      padding: 24px;
+      border-radius: 18px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo h1 {
+      font-size: 30px;
+      color: #f8c146;
+      margin-bottom: 8px;
+    }
+
+    .logo p {
+      color: #ccc;
+      font-size: 15px;
+    }
+
+    .info-box {
+      background: #292929;
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #ddd;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      font-size: 15px;
+      background: #2e2e2e;
+      color: #fff;
+    }
+
+    textarea {
+      resize: none;
+      min-height: 80px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 15px;
+      background: #f8c146;
+      color: #111;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #ffd76b;
+    }
+
+    button:disabled {
+      background: #777;
+      cursor: not-allowed;
+    }
+
+    .success {
+      display: none;
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #153d22;
+      color: #b9ffc8;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .error {
+      display: none;
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #4a1717;
+      color: #ffc1c1;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .whatsapp-btn {
+      display: none;
+      text-align: center;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #25d366;
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .footer {
+      text-align: center;
+      color: #888;
+      margin-top: 20px;
+      font-size: 13px;
+    }
+
+    .contact {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #ddd;
+    }
+
+    .contact a {
+      color: #f8c146;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="logo">
+      <h1>LNS HairStyles</h1>
+      <p>Book Your Appointment</p>
+    </div>
+
+    <div class="info-box">
+      Scan the QR code, fill this form, and reserve your slot.  
+      The owner and co-owner will receive your booking details.
+    </div>
+
+    <form id="bookingForm">
+      <label>Full Name</label>
+      <input type="text" id="name" placeholder="Enter your name" required />
+
+      <label>Mobile Number</label>
+      <input type="tel" id="phone" placeholder="Enter your mobile number" required />
+
+      <label>Service</label>
+      <select id="service" required>
+        <option value="">Select service</option>
+        <option value="Hair Cut">Hair Cut</option>
+        <option value="Beard Trim">Beard Trim</option>
+        <option value="Hair Cut + Beard Trim">Hair Cut + Beard Trim</option>
+        <option value="Hair Styling">Hair Styling</option>
+        <option value="Hair Coloring">Hair Coloring</option>
+        <option value="Facial">Facial</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label>Preferred Date</label>
+      <input type="date" id="date" required />
+
+      <label>Preferred Time</label>
+      <input type="time" id="time" required />
+
+      <label>Message / Special Request</label>
+      <textarea id="message" placeholder="Any special request?"></textarea>
+
+      <button type="submit" id="submitBtn">Book Appointment</button>
+    </form>
+
+    <div class="success" id="successBox">
+      Your appointment request has been submitted successfully.
+      Please send the booking details on WhatsApp also for quick confirmation.
+    </div>
+
+    <div class="error" id="errorBox">
+      Something went wrong. Please try again or contact the salon directly.
+    </div>
+
+    <a class="whatsapp-btn" id="whatsappLink" target="_blank">
+      Send Booking on WhatsApp
+    </a>
+
+    <div class="contact">
+      Owner: <a href="tel:9701326265">9701326265</a><br />
+      Co-owner: <a href="tel:8374794192">8374794192</a>
+    </div>
+
+    <div class="footer">
+      © 2026 LNS HairStyles. All rights reserved.
+    </div>
+  </div>
+
+  <script>
+    const SHOP_NAME = "LNS HairStyles";
+    const OWNER_PHONE = "919701326265";
+    const CO_OWNER_PHONE = "918374794192";
+
+    /*
+      After setting up Google Apps Script,
+      paste your deployed Web App URL below.
+      Example:
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/XXXXX/exec";
+    */
+    const GOOGLE_SCRIPT_URL = "";
+
+    const form = document.getElementById("bookingForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const successBox = document.getElementById("successBox");
+    const errorBox = document.getElementById("errorBox");
+    const whatsappLink = document.getElementById("whatsappLink");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      successBox.style.display = "none";
+      errorBox.style.display = "none";
+      whatsappLink.style.display = "none";
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Booking...";
+
+      const booking = {
+        shopName: SHOP_NAME,
+        name: document.getElementById("name").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        service: document.getElementById("service").value,
+        date: document.getElementById("date").value,
+        time: document.getElementById("time").value,
+        message: document.getElementById("message").value.trim(),
+        createdAt: new Date().toLocaleString()
+      };
+
+      const whatsappMessage =
+`New Appointment Request - ${SHOP_NAME}
+
+Name: ${booking.name}
+Phone: ${booking.phone}
+Service: ${booking.service}
+Date: ${booking.date}
+Time: ${booking.time}
+Message: ${booking.message || "No special request"}
+
+Please confirm the slot.`;
+
+      const encodedMessage = encodeURIComponent(whatsappMessage);
+      whatsappLink.href = `https://wa.me/${OWNER_PHONE}?text=${encodedMessage}`;
+
+      try {
+        if (GOOGLE_SCRIPT_URL) {
+          await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(booking)
+          });
+        }
+
+        successBox.style.display = "block";
+        whatsappLink.style.display = "block";
+        form.reset();
+      } catch (error) {
+        console.error(error);
+        errorBox.style.display = "block";
+        whatsappLink.style.display = "block";
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Book Appointment";
+    });
+  </script>
+</body>
+</html>
